@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace RickAndMortyAPI
 {
@@ -9,16 +10,46 @@ namespace RickAndMortyAPI
         {
             Console.WriteLine("Rick & Morty API");
 
-            client.BaseAddress = new Uri("https://rickandmortyapi.com/api");
+            client.BaseAddress = new Uri("https://rickandmortyapi.com/api/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(
                 new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json")
                 );
+
+            try
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    Personaje respuesta = ObtenPersonaje(i+1).GetAwaiter().GetResult();
+                    Console.WriteLine(respuesta.ToString());
+                }
+            }
+            catch (Exception e)
+            {
+                global::System.Console.WriteLine(e.ToString());
+                throw;
+            }
+
         }
 
-        static async Task<bool> ObtenPersonaje()
+        static async Task<Personaje> ObtenPersonaje(int id)
         {
-            HttpResponseMessage response = await client.GetAsync("character/2");
+            try
+            {
+                Personaje personaje;
+                HttpResponseMessage response = await client.GetAsync(string.Concat("character/", id.ToString()));
+                if (response.IsSuccessStatusCode)
+                {
+                    personaje = await response.Content.ReadFromJsonAsync<Personaje>();
+                    return personaje;
+                }
+                return null;
+            }
+            catch (Exception e)
+            {
+                await global::System.Console.Out.WriteLineAsync(e.ToString());
+                throw;
+            }
         }
     }
 }
