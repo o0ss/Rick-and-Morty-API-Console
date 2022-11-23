@@ -20,7 +20,8 @@ namespace RickAndMortyAPI
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    Personaje respuesta = ObtenPersonaje(i+1).GetAwaiter().GetResult();
+                    Random rand = new Random();
+                    Personaje respuesta = ObtenPersonaje(rand.Next(1, Personaje.TOTAL_CHARS)).GetAwaiter().GetResult();
                     Console.WriteLine(respuesta.ToString());
                 }
             }
